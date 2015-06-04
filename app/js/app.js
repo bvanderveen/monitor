@@ -1,5 +1,5 @@
-// var schema = require('./lib/libschema')
-// var _ = require('./lib/underscore')
+'use strict';
+
 define(['./lib/underscore.js', './lib/libschema'], function(_, schema) {
     var exports = {};
 
