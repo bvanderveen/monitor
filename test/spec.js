@@ -1,6 +1,6 @@
 'use strict';
 
-define(['jasmine', '../dist/js/app'], function(jasmine, app) {
+define(['jasmine', 'app/app'], function(jasmine, app) {
   describe('app', function(){
 
     beforeEach(function() {

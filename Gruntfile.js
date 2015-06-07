@@ -27,11 +27,15 @@ module.exports = function(grunt) {
         files: [
           {expand: true, cwd: 'app/css/', src: ['*.css'], dest: 'dist/css', filter: 'isFile'},
           {expand: true, cwd: 'app/css/lib', src: ['*.css'], dest: 'dist/css/lib', filter: 'isFile'},
-          {expand: true, cwd: 'app/', src: ['404.html'], dest: 'dist', filter: 'isFile'},
+          {expand: true, cwd: 'app/', src: ['*.html'], dest: 'dist', filter: 'isFile'},
+          {expand: true, cwd: 'app/', src: ['main.js'], dest: 'dist', filter: 'isFile'},
           {expand: true, cwd: 'app/partials/', src: ['*.html'], dest: 'dist/partials', filter: 'isFile'},
           {expand: true, cwd: 'app/js/', src: ['*.js'], dest: 'dist/js/', filter: 'isFile'},
+          {expand: true, cwd: 'app/js/app/', src: ['*.js'], dest: 'dist/js/app', filter: 'isFile'},
           {expand: true, cwd: 'app/images/', src: ['*.*'], dest: 'dist/images/', filter: 'isFile'},
           {expand: true, cwd: 'app/js/lib/', src: ['*.js'], dest: 'dist/js/lib/', filter: 'isFile'},
+          {expand: true, cwd: 'test/', src: ['spec.js'], dest: 'dist/js/app', filter: 'isFile'},
+          {expand: true, cwd: 'test/', src: ['test-main.js'], dest: 'dist', filter: 'isFile'},
         ]
       }
     },
@@ -49,6 +53,7 @@ module.exports = function(grunt) {
         'Gruntfile.js', 
         'schema.scm',
         'app/**/*.html',
+        'app/main.js',
         'app/css/**/*.scss', 
         'app/css/**/*.css', 
         'app/js/**/*.js',
@@ -86,7 +91,7 @@ module.exports = function(grunt) {
       },
       test: {
         command:
-        "node test/test-main.js"
+        "cd dist; node test-main.js"
       }
     },
     requirejs: {
@@ -109,17 +114,16 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-lint5');
   grunt.loadNpmTasks('grunt-preprocess');
   grunt.loadNpmTasks('grunt-shell')
-  grunt.loadNpmTasks('grunt-s3');
   grunt.loadNpmTasks('grunt-wait');
 
-  grunt.registerTask('default', ['jshint', 'clean', 'shell:cauterize', 'requirejs', 'karma:unit:run', 'preprocess:dev', 'sass', 'copy']);
+  grunt.registerTask('default', ['test']);
   grunt.registerTask('test', [
     'jshint', 
     'clean', 
     'shell:cauterize', 
     'copy', 
     'shell:test']);
-  grunt.registerTask('develop', ['karma:unit:start', 'connect', 'wait:briefly', 'watch']);
+  grunt.registerTask('develop', ['connect', 'wait:briefly', 'watch']);
   grunt.registerTask('deploy', ['jshint', 'clean', 'preprocess:prod', 'sass', 'copy']);
   
 

@@ -1,14 +1,17 @@
 var requirejs = require('requirejs');
 
 requirejs.config({
-    nodeRequire: require
+    baseUrl: 'js',
+    paths: {
+        underscore: 'lib/underscore'
+    }
 });
 
 var reporters = require('jasmine-reporters');
 
 jasmine = require('jasmine-node');
 
-requirejs(['spec'], function () {
+requirejs(['app/spec'], function () {
     jasmine.getEnv().addReporter(new jasmine.TerminalReporter({color:true}));
     jasmine.getEnv().execute();
 });
