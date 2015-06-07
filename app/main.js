@@ -7,6 +7,5 @@ requirejs.config({
 });
 
 requirejs(['app/app'], function(app) {
-    alert("asdf");
-    $(".global-wrapper").append("hi" + app.types);
+    $(".global-wrapper").append("types are: " + _.map(app.types, function(x) { return "a type called " + x; }).join(', '));
 });
