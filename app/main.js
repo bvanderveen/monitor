@@ -131,7 +131,6 @@ requirejs(['app/app'], function(app) {
     SensorDisplayView.prototype.setState = function(value) {
         this.state = value;
         this.draw();
-        // this.element.find(".lat").html(value);
     };
 
     function SensorDisplay(messageSource) {
@@ -167,14 +166,14 @@ requirejs(['app/app'], function(app) {
 
     var state = 0;
     setInterval(function() {
-        state += .5;
+        state += .01;
         d.onMessage({
             euler: {
                 pitch: 20 * Math.sin(state / 15),
                 roll: 60 * Math.cos(state / 30)
             }
         });
-    }, 50);
+    }, 10);
 
     $(".global-wrapper").append(d.view.element);
 
