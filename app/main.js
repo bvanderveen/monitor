@@ -8,42 +8,55 @@ requirejs.config({
 
 requirejs(['app/app'], function(app) {
 
-    function PIDDisplayView() {
-        this.element = $("<div class='pid_display'><span class='i'></span><span class='d'></span></div>")
+    // at first I just want to make a HUD for my glider.
+
+    // so things like 
+    // attitude indicator
+    // moving map
+    // g-meter
+    // current heading
+    // altitude
+    // sink rate
+    // velocity vector/intercept point
+
+
+    function SensorDisplayView() {
+        this.element = $("<div class='sensor_display'><span class='lat'></span><span class='lon'></span></div>")
     };
 
-    PIDDisplayView.prototype.setIState = function(value) {
-        this.element.find(".i").html(value);
+    SensorDisplayView.prototype.setLat = function(value) {
+        this.element.find(".lat").html(value);
     };
 
-    PIDDisplayView.prototype.setDState = function(value) {
-        this.element.find(".d").html(value);
+    SensorDisplayView.prototype.setLon = function(value) {
+        this.element.find(".lon").html(value);
     };
 
-    function PIDDisplay(observable) {
-        this.observable = observable;
+    function SensorDisplay(messageSource) {
+        this.messageSource = messageSource;
     };
 
-    PIDDisplay.prototype.loadView = function() {
-        this.view = new PIDDisplayView();
+    SensorDisplay.prototype.loadView = function() {
+        this.view = new SensorDisplayView();
     };
 
-    PIDDisplay.prototype.viewWillAppear = function() {
-        this.cancel = this.observable.subscribe(this.handleUpdate);
+    SensorDisplay.prototype.viewWillAppear = function() {
+        this.messageSource.setDelegate(this);
+        this.messageSource.connect();
     };
 
-    PIDDisplay.prototype.viewWillDisappear = function() {
-        this.cancel();
+    SensorDisplay.prototype.viewWillDisappear = function() {
+        this.messageSource.setDelegate(null);
     };
 
-    PIDDisplay.prototype.handleUpdate = function(x) {
-        this.view.setIState(5);
-        this.view.setDState(2);
+    SensorDisplay.prototype.onMessage = function(m) {
+        this.view.setLat(m.fields.gps_position.fields.lat.toJS());
+        this.view.setLon(m.fields.gps_position.fields.lon.toJS());
     };
 
-    var d = new PIDDisplay(null);
+    var d = new SensorDisplay(new app.MessageSource());
     d.loadView();
+    d.viewWillAppear();
 
     $(".global-wrapper").append(d.view.element);
-    d.handleUpdate(null);
 });

@@ -11,15 +11,14 @@
         (field d_gain f32)))
 
     (record gps_position_t (fields 
-        (field latitude f32)
-        (field longitude f32)
-        (field altitude f32)
+        (field lat f32)
+        (field lon f32)
+        (field alt f32)
         (field t time_t)))
 
     (record gps_velocity_t (fields 
         (field course f32)
-        (field speed f32)
-        (field altitude f32)))
+        (field speed f32)))
 
     (record val_1_t (fields
         (field x f32)
@@ -51,8 +50,24 @@
         (field gps_position gps_position_t)
         (field gps_velocity gps_velocity_t)))
 
-    (record vehicle_t (fields
+    (record effector_state_t (fields
+        (field throttle f32)
+        (field aileron f32)
+        (field elevator f32)
+        (field rudder f32)))
+
+    (record control_state_t (fields
+        (field rudder_pid_state pid_state_t)))
+
+    (combination vehicle_state_t (fields
         (field sensor_state sensor_state_t)))
 
+    (combination controllable_vehicle_state (fields
+        (field control_state control_state_t)
+        (field effector_state effector_state_t)
+        ))
+
+    (combination vehicle_config_t (fields
+        (field rudder_pid_config pid_config_t)))
     )
 
