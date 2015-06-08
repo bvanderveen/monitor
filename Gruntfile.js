@@ -32,6 +32,7 @@ module.exports = function(grunt) {
           {expand: true, cwd: 'app/partials/', src: ['*.html'], dest: 'dist/partials', filter: 'isFile'},
           {expand: true, cwd: 'app/js/', src: ['*.js'], dest: 'dist/js/', filter: 'isFile'},
           {expand: true, cwd: 'app/js/app/', src: ['*.js'], dest: 'dist/js/app', filter: 'isFile'},
+          {expand: true, cwd: 'app/js/app/ui/', src: ['*.js'], dest: 'dist/js/app/ui', filter: 'isFile'},
           {expand: true, cwd: 'app/images/', src: ['*.*'], dest: 'dist/images/', filter: 'isFile'},
           {expand: true, cwd: 'app/js/lib/', src: ['*.js'], dest: 'dist/js/lib/', filter: 'isFile'},
           {expand: true, cwd: 'test/', src: ['spec.js'], dest: 'dist/js/app', filter: 'isFile'},
