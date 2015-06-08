@@ -49,7 +49,7 @@ define(['underscore', 'lib/libschema'], function(_, schema) {
 
         var t = 1400000;
 
-        var message = new schema.SensorStateT({
+        var m = new schema.SensorStateT({
             mag_reading: val3(-1.0, 0, 0, t),
             acc_reading: val3(0, -9.8, 0, t),
             gyr_reading: val3(0.0, 0, 0, t),
@@ -58,7 +58,15 @@ define(['underscore', 'lib/libschema'], function(_, schema) {
             gps_velocity: gpsVelocity(50, 270)
         });
 
-        this.delegate.onMessage(message);
+        this.delegate.onMessage({
+            lat: m.fields.gps_position.fields.lat.toJS(),
+            lon: m.fields.gps_position.fields.lon.toJS(),
+            alt: m.fields.gps_position.fields.alt.toJS(),
+            euler: {
+                pitch: 10,
+                roll: 30
+            }
+        });
     };
 
     MessageSource.prototype.disconnect = function() {
