@@ -55,12 +55,19 @@ void euler_to_quaternion(double heading, double attitude, double bank, double *w
     *z = (-s1 * s3 + c1 * s2 * c3 +s2) / w4;
 }
 
+struct {
+    struct connection *connection;
+    struct kore_timer *timer;
+} session_t;
 
-/* Called whenever we get a new websocket connection. */
-void
-websocket_connect(struct connection *c)
-{
-    kore_log(LOG_NOTICE, "%p: connected!", c);
+void websocket_send(struct connection *c);
+void websocket_send(struct connection *c) {
+
+    static double state = 0;
+
+    state += 0.05;
+    double pitch = 20 * sin(state / 15);
+    double roll = 40 * cos(state / 20);
 
     struct caut_encode_iter encode_iter;
 
@@ -69,7 +76,6 @@ websocket_connect(struct connection *c)
     char *buffer[buffer_size];
 
     caut_encode_iter_init(&encode_iter, buffer, buffer_size);
-
 
     struct val_3_t val_3_t_zero;
     val_3_t_zero.x = 0;
@@ -83,7 +89,7 @@ websocket_connect(struct connection *c)
 
     double w, x, y, z;
 
-    euler_to_quaternion(0, DEGREES_TO_RADIANS(10), DEGREES_TO_RADIANS(30), &w, &x, &y, &z);
+    euler_to_quaternion(0, DEGREES_TO_RADIANS(pitch), DEGREES_TO_RADIANS(roll), &w, &x, &y, &z);
 
     struct sensor_state_t sensor_state;
 
@@ -106,9 +112,29 @@ websocket_connect(struct connection *c)
 
     encode_message_schema(&encode_iter, &m);
 
-
-    kore_log(LOG_NOTICE, "wrote quat (%f, %f, %f, %f)", w, x, y, z);
     kore_websocket_send(c, WEBSOCKET_OP_BINARY, &buffer, encode_iter.position);
+    net_send_flush(c);
+}
+
+void timer_callback(void *ctx, u_int64_t x, u_int64_t y);
+void timer_callback(void *ctx, u_int64_t x, u_int64_t y) {
+    struct connection *c = (struct connection*)ctx;
+
+    websocket_send(c);
+}
+
+static struct kore_timer *timer = NULL;
+
+/* Called whenever we get a new websocket connection. */
+void
+websocket_connect(struct connection *c)
+{
+    kore_log(LOG_NOTICE, "%p: connected!", c);
+
+    if (!timer) {
+        u_int64_t interval = 40;
+        timer = kore_timer_add(timer_callback, interval, c, 0);
+    }
 }
 
 
@@ -122,15 +148,8 @@ void
 websocket_disconnect(struct connection *c)
 {
     kore_log(LOG_NOTICE, "%p: disconnecting", c);
-}
-
-int
-page(struct http_request *req)
-{
-    http_response_header(req, "content-type", "text/html");
-    http_response(req, 200, asset_frontend_html, asset_len_frontend_html);
-
-    return (KORE_RESULT_OK);
+    kore_timer_remove(timer);
+    timer = NULL;
 }
 
 int

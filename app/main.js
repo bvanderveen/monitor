@@ -93,8 +93,6 @@ requirejs(['app/app', 'app/ui/instruments'], function(app, instruments) {
     SensorDisplay.prototype.onMessage = function(m) {
 
         function quaterionToEuler(q1) {
-            console.log("got quat (" + q1.w + ", " + q1.x + ", " + q1.y + ", " + q1.z + ")");
-
             var sqw = q1.w*q1.w;
             var sqx = q1.x*q1.x;
             var sqy = q1.y*q1.y;
@@ -148,8 +146,8 @@ requirejs(['app/app', 'app/ui/instruments'], function(app, instruments) {
 
     // var state = 0;
     // setInterval(function() {
-    //     state += .01;
-    //     d.onMessage({
+    //     state += .05;
+    //     d.view.setState({
     //         euler: {
     //             pitch: 20 * Math.sin(state / 15),
     //             roll: 60 * Math.cos(state / 30)
