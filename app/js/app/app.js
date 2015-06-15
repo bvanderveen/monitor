@@ -81,7 +81,6 @@ define(['underscore', 'lib/libschema', 'lib/libcaut/cauterize', 'lib/libcaut/buf
     };
 
     WebsocketMessageSource.prototype.setDelegate = function(delegate) {
-        console.log("set deelgate");
         this.delegate = delegate;
     };
 
@@ -111,6 +110,8 @@ define(['underscore', 'lib/libschema', 'lib/libcaut/cauterize', 'lib/libcaut/buf
 
     WebsocketMessageSource.prototype.onClose = function (e) {
         console.log("onClose");
+        this.disconnect();
+        this.connect();
     };
 
     WebsocketMessageSource.prototype.onMessage = function (e) {
