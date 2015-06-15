@@ -15,8 +15,6 @@ define([], function() {
 
         var normalizedWidth = aspect * standardDimension;
         var normalizedHeight = standardDimension;
-        console.log(normalizedWidth);
-        console.log(normalizedHeight);
         ctx.rect(-normalizedWidth / 2, -normalizedHeight / 2, normalizedWidth, normalizedHeight);
         ctx.clip();
 

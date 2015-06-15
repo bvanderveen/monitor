@@ -82,7 +82,9 @@ module.exports = function(grunt) {
         command: 
         "mkdir -p dist/js/lib; " +
         "cauterize --schema schema.scm --output dist/schema.spec; " +
-        "caut-javascript-ref-gen --spec dist/schema.spec  --output dist/js/lib"
+        "caut-javascript-ref-gen --spec dist/schema.spec  --output dist/js/lib; " +
+        "caut-c11-ref --spec dist/schema.spec  --output server/schema; " +
+        "cp server/schema/{cauterize,schema}.{c,h} server/kore/src "
       },
       wrap_cauterize_output: {
         command:

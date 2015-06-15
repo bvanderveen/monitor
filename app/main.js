@@ -21,9 +21,6 @@ requirejs(['app/app', 'app/ui/instruments'], function(app, instruments) {
     // sink rate
     // velocity vector/intercept point
 
-    
-
-
     function SensorDisplayView() {
         this.element = $("<div class='canvas-wrapper'></div>");
         this.attitude = new instruments.AttitudeIndicator();
@@ -94,23 +91,71 @@ requirejs(['app/app', 'app/ui/instruments'], function(app, instruments) {
     }
 
     SensorDisplay.prototype.onMessage = function(m) {
-        this.view.setState(m);
+
+        function quaterionToEuler(q1) {
+            console.log("got quat (" + q1.w + ", " + q1.x + ", " + q1.y + ", " + q1.z + ")");
+
+            var sqw = q1.w*q1.w;
+            var sqx = q1.x*q1.x;
+            var sqy = q1.y*q1.y;
+            var sqz = q1.z*q1.z;
+            var unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
+            var test = q1.x*q1.y + q1.z*q1.w;
+            if (test > 0.499*unit) { // singularity at north pole
+                return {
+                    heading: 2 * Math.atan2(q1.x,q1.w),
+                    pitch: Math.PI/2,
+                    roll: 0
+                };
+            }
+            if (test < -0.499*unit) { // singularity at south pole
+                return {
+                    heading: -2 * Math.atan2(q1.x,q1.w),
+                    pitch: -Math.PI/2,
+                    roll: 0
+                };
+            }
+            return {
+                heading: Math.atan2(2*q1.y*q1.w-2*q1.x*q1.z , sqx - sqy - sqz + sqw),
+                pitch: Math.asin(2*test/unit),
+                roll: Math.atan2(2*q1.x*q1.w-2*q1.y*q1.z , -sqx + sqy - sqz + sqw)
+            }
+        }
+
+        var euler = quaterionToEuler({
+            w: m.fields.quat_reading.fields.w.toJS(),
+            x: m.fields.quat_reading.fields.x.toJS(),
+            y: m.fields.quat_reading.fields.y.toJS(),
+            z: m.fields.quat_reading.fields.z.toJS()
+        });
+
+        function radiansToDegrees(rad) {
+            return rad / Math.PI * 180;
+        }
+
+        var state = {
+            euler: {
+                pitch: radiansToDegrees(euler.pitch),
+                roll: radiansToDegrees(euler.roll)
+            }
+        }
+        this.view.setState(state);
     };
 
-    var d = new SensorDisplay(new app.MessageSource());
+    var d = new SensorDisplay(new app.WebsocketMessageSource());
     d.loadView();
     d.viewWillAppear();
 
-    var state = 0;
-    setInterval(function() {
-        state += .01;
-        d.onMessage({
-            euler: {
-                pitch: 20 * Math.sin(state / 15),
-                roll: 60 * Math.cos(state / 30)
-            }
-        });
-    }, 10);
+    // var state = 0;
+    // setInterval(function() {
+    //     state += .01;
+    //     d.onMessage({
+    //         euler: {
+    //             pitch: 20 * Math.sin(state / 15),
+    //             roll: 60 * Math.cos(state / 30)
+    //         }
+    //     });
+    // }, 10);
 
     $(".global-wrapper").append(d.view.element);
 

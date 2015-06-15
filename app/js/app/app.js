@@ -1,4 +1,4 @@
-define(['underscore', 'lib/libschema'], function(_, schema) {
+define(['underscore', 'lib/libschema', 'lib/libcaut/cauterize', 'lib/libcaut/buffer'], function(_, schema, cauterize, buffer) {
     "use strict";
 
     var exports = {};
@@ -74,6 +74,61 @@ define(['underscore', 'lib/libschema'], function(_, schema) {
     };
 
     exports.MessageSource = MessageSource;
+
+
+    function WebsocketMessageSource() {
+
+    };
+
+    WebsocketMessageSource.prototype.setDelegate = function(delegate) {
+        console.log("set deelgate");
+        this.delegate = delegate;
+    };
+
+    WebsocketMessageSource.prototype.connect = function() {
+        console.log("connecting");
+        this.socket = new WebSocket("wss://127.0.0.1:8888/connect");
+        this.socket.binaryType = 'arraybuffer';
+
+        var self = this;
+        this.socket.onopen = function(e) { self.onOpen(e); };
+        this.socket.onclose = function(e) { self.onClose(e); };
+        this.socket.onmessage = function(e) { self.onMessage(e); };
+        this.socket.onerror = function(e) { self.onError(e); };
+    };
+
+    WebsocketMessageSource.prototype.disconnect = function() {
+        this.socket.onopen = null;
+        this.socket.onclose = null;
+        this.socket.onmessage = null;
+        this.socket.onerror = null;
+        this.socket = null;
+    };
+
+    WebsocketMessageSource.prototype.onOpen = function (e) {
+        console.log("onOpen");
+    };
+
+    WebsocketMessageSource.prototype.onClose = function (e) {
+        console.log("onClose");
+    };
+
+    WebsocketMessageSource.prototype.onMessage = function (e) {
+        var c = new cauterize.Cauterize(schema.SpecificationInfo);
+
+        var b = new buffer.CautBuffer();
+        b.addU8Array(new Uint8Array(e.data));
+
+        
+        var message = c.decode(b);
+        this.delegate.onMessage(message);
+    };
+
+    WebsocketMessageSource.prototype.onError = function (e) {
+        console.log("onError");
+    };
+
+    exports.WebsocketMessageSource = WebsocketMessageSource;
 
     return exports;
 });

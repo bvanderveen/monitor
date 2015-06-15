@@ -1,2 +1,7 @@
 dist
 node_modules
+.objs
+server/schema
+server/kore/src/cauterize.*
+server/kore/src/schema.*
+*.so

@@ -1,5 +1,5 @@
 (schema schema 0.0.1
-    (synonym time_t f32)
+    (synonym datetime_t f32)
 
     (record pid_state_t (fields
         (field i_state f32)
@@ -14,7 +14,7 @@
         (field lat f32)
         (field lon f32)
         (field alt f32)
-        (field t time_t)))
+        (field t datetime_t)))
 
     (record gps_velocity_t (fields 
         (field course f32)
@@ -22,25 +22,25 @@
 
     (record val_1_t (fields
         (field x f32)
-        (field t time_t)))
+        (field t datetime_t)))
 
     (record val_2_t (fields
         (field x f32)
         (field y f32)
-        (field t time_t)))
+        (field t datetime_t)))
 
     (record val_3_t (fields
         (field x f32)
         (field y f32)
         (field z f32)
-        (field t time_t)))
+        (field t datetime_t)))
 
     (record val_4_t (fields
         (field w f32)
         (field x f32)
         (field y f32)
         (field z f32)
-        (field t time_t)))
+        (field t datetime_t)))
 
     (record sensor_state_t (fields
         (field mag_reading val_3_t)
