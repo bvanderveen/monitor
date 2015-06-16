@@ -37,6 +37,12 @@ module.exports = function(grunt) {
           {expand: true, cwd: 'app/js/lib/', src: ['*.js'], dest: 'dist/js/lib/', filter: 'isFile'},
           {expand: true, cwd: 'test/', src: ['spec.js'], dest: 'dist/js/app', filter: 'isFile'},
           {expand: true, cwd: 'test/', src: ['test-main.js'], dest: 'dist', filter: 'isFile'},
+          {expand: true, cwd: 'server/kore', src: ['*'], dest: 'dist/server/kore', filter: 'isFile'},
+          {expand: true, cwd: 'server/kore/src', src: ['*'], dest: 'dist/server/kore/src', filter: 'isFile'},
+          {expand: true, cwd: 'server/kore/conf', src: ['*'], dest: 'dist/server/kore/conf', filter: 'isFile'},
+          {expand: true, cwd: 'server/kore/assets', src: ['*'], dest: 'dist/server/kore/assets', filter: 'isFile'},
+          {expand: true, cwd: 'server/kore/cert', src: ['*'], dest: 'dist/server/kore/cert', filter: 'isFile'}
+
         ]
       }
     },
@@ -58,7 +64,9 @@ module.exports = function(grunt) {
         'app/css/**/*.scss', 
         'app/css/**/*.css', 
         'app/js/**/*.js',
-        'test/**/*.js'],
+        'test/**/*.js',
+        'server/**/*.c',
+        'server/**/*.h'],
         tasks: ['default']
       },
       options: {
@@ -83,8 +91,7 @@ module.exports = function(grunt) {
         "mkdir -p dist/js/lib; " +
         "cauterize --schema schema.scm --output dist/schema.spec; " +
         "caut-javascript-ref-gen --spec dist/schema.spec  --output dist/js/lib; " +
-        "caut-c11-ref --spec dist/schema.spec  --output server/schema; " +
-        "cp server/schema/{cauterize,schema}.{c,h} server/kore/src "
+        "caut-c11-ref --spec dist/schema.spec  --output dist/server/kore/src; "
       },
       wrap_cauterize_output: {
         command:
@@ -95,15 +102,17 @@ module.exports = function(grunt) {
       test: {
         command:
         "cd dist; node test-main.js"
-      }
-    },
-    requirejs: {
-      compile: {
-        options: {
-          appDir: 'app',
-          baseUrl: 'js',
-          dir: 'dist/'
-        }
+      },
+      kore_build: {
+        command:
+        "cd dist/server/kore; " +
+        "kore clean;" +
+        "CPATH=/opt/kore/include kore build"
+      },
+      kore_run: {
+        command:
+        "cd dist/server/kore; " +
+        "kore run "
       }
     }
   });
@@ -123,9 +132,11 @@ module.exports = function(grunt) {
   grunt.registerTask('test', [
     'jshint', 
     'clean', 
-    'shell:cauterize', 
     'copy', 
-    'shell:test']);
+    'shell:cauterize', 
+    'shell:kore_build',
+    'shell:test',
+    'shell:kore_run']);
   grunt.registerTask('develop', ['connect', 'wait:briefly', 'watch']);
   grunt.registerTask('deploy', ['jshint', 'clean', 'preprocess:prod', 'sass', 'copy']);
   
