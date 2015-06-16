@@ -19,7 +19,7 @@
 #include <math.h>
 
 #include "schema.h"
-#include "assets.h"
+//#include "assets.h"
 
 #define DEGREES_TO_RADIANS(D) ((D) / 180.0 * M_PI)
 
@@ -65,7 +65,7 @@ void websocket_send(struct connection *c) {
 
     static double state = 0;
 
-    state += 0.05;
+    state += 0.5;
     double pitch = 20 * sin(state / 15);
     double roll = 40 * cos(state / 20);
 
@@ -83,9 +83,6 @@ void websocket_send(struct connection *c) {
     val_3_t_zero.z = 0;
     val_3_t_zero.t = 0;
 
-    struct message_schema m;
-
-    m._type = type_index_schema_sensor_state_t;
 
     double w, x, y, z;
 
@@ -108,6 +105,8 @@ void websocket_send(struct connection *c) {
     sensor_state.gps_velocity.course = 0;
     sensor_state.gps_velocity.speed = 0;
 
+    struct message_schema m;
+    m._type = type_index_schema_sensor_state_t;
     m._data.msg_sensor_state_t = sensor_state;
 
     encode_message_schema(&encode_iter, &m);
