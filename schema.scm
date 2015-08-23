@@ -43,9 +43,11 @@
         (field t datetime_t)))
 
     (record sensor_state_t (fields
+        (field pressure_reading val_1_t)
         (field mag_reading val_3_t)
         (field acc_reading val_3_t)
         (field gyr_reading val_3_t)
+        (field vel_reading val_3_t)
         (field quat_reading val_4_t)
         (field gps_position gps_position_t)
         (field gps_velocity gps_velocity_t)))

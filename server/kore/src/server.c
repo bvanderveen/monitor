@@ -1,19 +1,3 @@
-/*
- * Copyright (c) 2014 Joris Vink <joris@coders.se>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
 #include <kore/kore.h>
 #include <kore/http.h>
 #include <math.h>
@@ -98,6 +82,10 @@ void websocket_send(struct connection *c) {
     sensor_state.quat_reading.y = y;
     sensor_state.quat_reading.z = z;
     sensor_state.quat_reading.t = 0.0;
+    sensor_state.vel_reading.x = 1;
+    sensor_state.vel_reading.y = 1;
+    sensor_state.vel_reading.z = 1;
+    sensor_state.vel_reading.t = 0.0;
     sensor_state.gps_position.lat = 0;
     sensor_state.gps_position.lon = 0;
     sensor_state.gps_position.alt = 0;
@@ -155,7 +143,6 @@ int
 page_ws_connect(struct http_request *req)
 {
     kore_log(LOG_NOTICE, "got ws connect");
-    /* Perform the websocket handshake, passing our callbacks. */
     kore_websocket_handshake(req, &wscbs);
 
     return (KORE_RESULT_OK);
